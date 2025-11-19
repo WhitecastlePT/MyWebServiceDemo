@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração - Dia & Noite: O Mundo dos Animais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .status {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .authors {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦁 Dia & Noite: O Mundo dos Animais</h1>
+        <p class="subtitle">Configuração da Atividade - Inven!RA</p>
+        
+        <div class="form-group">
+            <label for="idioma">Idioma</label>
+            <select id="idioma">
+                <option value="pt">Português</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="nivelInicial">Nível Inicial</label>
+            <input type="number" id="nivelInicial" value="1" min="1" max="5">
+        </div>
+        
+        <div class="form-group">
+            <label for="tempoSessao">Tempo Mínimo de Sessão (minutos)</label>
+            <input type="number" id="tempoSessao" value="5" min="1" max="60">
+        </div>
+        
+        <div class="form-group">
+            <label for="objetivoAcertos">Objetivo de Acertos (%)</label>
+            <input type="number" id="objetivoAcertos" value="80" min="50" max="100">
+        </div>
+        
+        <div class="form-group">
+            <label for="modulos">Módulos Ativos</label>
+            <select id="modulos">
+                <option value="cognitivo,sessoes">Ambos (Cognitivo + Sessões)</option>
+                <option value="cognitivo">Apenas Cognitivo (Henrique)</option>
+                <option value="sessoes">Apenas Sessões (Fábio)</option>
+            </select>
+        </div>
+        
+        <div class="info">
+            <h3>📊 Analytics Disponíveis</h3>
+            <ul>
+                <li><strong>Módulo Cognitivo (Henrique):</strong> Respostas, taxa de acerto, níveis, animais descobertos, categorias completadas</li>
+                <li><strong>Módulo Sessões (Fábio):</strong> Tempo de jogo, número de sessões, interações, dias consecutivos, repetições</li>
+            </ul>
+        </div>
+        
+        <div class="status">
+            ✅ Activity Provider Configurado e Pronto para Integração
+        </div>
+        
+        <div class="authors">
+            <strong>Desenvolvido por:</strong><br>
+            Henrique Crachat (2501450) | Fábio Amado (2501444)<br>
+            UC: Arquitetura e Padrões de Software
+        </div>
+    </div>
+</body>
+</html>
+```

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,54 +12,67 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 40px 20px;
+            color: #333;
         }
         
-        .container {
+        .contentor {
             background: white;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
+            padding: 0;
+            max-width: 700px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        
+        .cabecalho {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 50px;
         }
         
         h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
         
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+        .subtitulo {
+            color: #ecf0f1;
+            font-size: 15px;
+            font-weight: 300;
         }
         
-        .form-group {
-            margin-bottom: 20px;
+        .conteudo {
+            padding: 40px 50px;
+        }
+        
+        .grupo-formulario {
+            margin-bottom: 25px;
         }
         
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: #2c3e50;
             font-weight: 600;
+            font-size: 14px;
         }
         
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border 0.3s;
+            font-size: 15px;
+            transition: border 0.2s;
+            font-family: inherit;
         }
         
         input:focus, select:focus {
@@ -67,94 +80,118 @@
             border-color: #667eea;
         }
         
-        .info {
+        .informacao {
             background: #f0f4ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
+            padding: 25px;
+            margin-top: 30px;
         }
         
-        .info h3 {
+        .informacao h3 {
             color: #667eea;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 16px;
         }
         
-        .info ul {
+        .informacao ul {
             margin-left: 20px;
             color: #555;
-            line-height: 1.6;
+            line-height: 1.8;
         }
         
-        .status {
+        .informacao li {
+            margin-bottom: 8px;
+        }
+        
+        .estado {
             background: #e8f5e9;
             color: #2e7d32;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 20px;
+            margin-top: 30px;
             text-align: center;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .authors {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
+        .autores {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 50px;
             font-size: 14px;
+            line-height: 1.8;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .cabecalho,
+            .conteudo,
+            .autores {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🦁 Dia & Noite: O Mundo dos Animais</h1>
-        <p class="subtitle">Configuração da Atividade - Inven!RA</p>
-        
-        <div class="form-group">
-            <label for="idioma">Idioma</label>
-            <select id="idioma">
-                <option value="pt">Português</option>
-                <option value="en">English</option>
-                <option value="es">Español</option>
-            </select>
+    <div class="contentor">
+        <div class="cabecalho">
+            <h1>Dia & Noite: O Mundo dos Animais</h1>
+            <p class="subtitulo">Configuração da Atividade - Inven!RA</p>
         </div>
         
-        <div class="form-group">
-            <label for="nivelInicial">Nível Inicial</label>
-            <input type="number" id="nivelInicial" value="1" min="1" max="5">
+        <div class="conteudo">
+            <div class="grupo-formulario">
+                <label for="idioma">Idioma</label>
+                <select id="idioma">
+                    <option value="pt">Português</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+            
+            <div class="grupo-formulario">
+                <label for="nivelInicial">Nível Inicial</label>
+                <input type="number" id="nivelInicial" value="1" min="1" max="5">
+            </div>
+            
+            <div class="grupo-formulario">
+                <label for="tempoSessao">Tempo Mínimo de Sessão (minutos)</label>
+                <input type="number" id="tempoSessao" value="5" min="1" max="60">
+            </div>
+            
+            <div class="grupo-formulario">
+                <label for="objetivoAcertos">Objetivo de Acertos (%)</label>
+                <input type="number" id="objetivoAcertos" value="80" min="50" max="100">
+            </div>
+            
+            <div class="grupo-formulario">
+                <label for="modulos">Módulos Ativos</label>
+                <select id="modulos">
+                    <option value="cognitivo,sessoes">Ambos (Cognitivo + Sessões)</option>
+                    <option value="cognitivo">Apenas Cognitivo (Henrique)</option>
+                    <option value="sessoes">Apenas Sessões (Fábio)</option>
+                </select>
+            </div>
+            
+            <div class="informacao">
+                <h3>Analytics Disponíveis</h3>
+                <ul>
+                    <li><strong>Módulo Cognitivo (Henrique):</strong> Respostas, taxa de acerto, níveis, animais descobertos, categorias completadas</li>
+                    <li><strong>Módulo Sessões (Fábio):</strong> Tempo de jogo, número de sessões, interações, dias consecutivos, repetições</li>
+                </ul>
+            </div>
+            
+            <div class="estado">
+                Activity Provider Configurado e Pronto para Integração
+            </div>
         </div>
         
-        <div class="form-group">
-            <label for="tempoSessao">Tempo Mínimo de Sessão (minutos)</label>
-            <input type="number" id="tempoSessao" value="5" min="1" max="60">
-        </div>
-        
-        <div class="form-group">
-            <label for="objetivoAcertos">Objetivo de Acertos (%)</label>
-            <input type="number" id="objetivoAcertos" value="80" min="50" max="100">
-        </div>
-        
-        <div class="form-group">
-            <label for="modulos">Módulos Ativos</label>
-            <select id="modulos">
-                <option value="cognitivo,sessoes">Ambos (Cognitivo + Sessões)</option>
-                <option value="cognitivo">Apenas Cognitivo (Henrique)</option>
-                <option value="sessoes">Apenas Sessões (Fábio)</option>
-            </select>
-        </div>
-        
-        <div class="info">
-            <h3>📊 Analytics Disponíveis</h3>
-            <ul>
-                <li><strong>Módulo Cognitivo (Henrique):</strong> Respostas, taxa de acerto, níveis, animais descobertos, categorias completadas</li>
-                <li><strong>Módulo Sessões (Fábio):</strong> Tempo de jogo, número de sessões, interações, dias consecutivos, repetições</li>
-            </ul>
-        </div>
-        
-        <div class="status">
-            ✅ Activity Provider Configurado e Pronto para Integração
-        </div>
-        
-        <div class="authors">
+        <div class="autores">
             <strong>Desenvolvido por:</strong><br>
             Henrique Crachat (2501450) | Fábio Amado (2501444)<br>
             UC: Arquitetura e Padrões de Software
@@ -162,4 +199,3 @@
     </div>
 </body>
 </html>
-```

@@ -1,10 +1,13 @@
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from data.mock_data import get_student_data
+from factories.challenge_factory import ChallengeFactory
+from cognitive_module.cognitive_endpoints import register_cognitive_routes
+
 
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para integração com Inven!RA
-
+register_cognitive_routes(app)
 
 # ========================================
 # PÁGINA INICIAL
@@ -22,7 +25,13 @@ def index():
             'params': '/api/params',
             'deploy': '/api/deploy (POST)',
             'analyticsList': '/api/analytics-list',
-            'analytics': '/api/analytics (POST)'
+            'analytics': '/api/analytics (POST)',
+            # Endpoints do Módulo Cognitivo
+            'cognitive_challenge': '/api/cognitive/challenge (POST)',            
+            'cognitive_submit': '/api/cognitive/submit-answer (POST)',            
+            'cognitive_accuracy': '/api/cognitive/accuracy/{user_id} (GET)',            
+            'cognitive_progress': '/api/cognitive/progress/{user_id} (GET)',            
+            'cognitive_recommendations': '/api/cognitive/recommendations/{user_id} (GET)'
         }
     })
 
@@ -238,6 +247,70 @@ def analytics():
     })
 
 
+@app.route("/api/game/get-challenge", methods=['POST'])
+def get_challenge():
+    """
+    Endpoint que usa o Factory Method para criar desafios.
+    
+    Body:
+    {
+        "animal_id": 1,
+        "challenge_type": "audio",  // ou "random"
+        "difficulty": 2
+    }
+    """
+    data = request.get_json()
+    
+    animal_id = data.get('animal_id', 1)
+    challenge_type = data.get('challenge_type', 'random')
+    difficulty = data.get('difficulty', 1)
+    
+    try:
+        # USO DO FACTORY METHOD
+        if challenge_type == 'random':
+            challenge = ChallengeFactory.create_random_challenge(animal_id, difficulty)
+        else:
+            challenge = ChallengeFactory.create_challenge(challenge_type, animal_id, difficulty)
+        
+        return jsonify({
+            'success': True,
+            'challenge': challenge.to_dict()
+        })
+    
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+
+@app.route("/api/game/validate-answer", methods=['POST'])
+def validate_answer():
+    """
+    Validar resposta de um desafio.
+    
+    Body:
+    {
+        "challenge_id": "audio_1_1234",
+        "answer": "Leão",
+        "animal_id": 1,
+        "challenge_type": "audio"
+    }
+    """
+    data = request.get_json()
+    
+    # Recriar o desafio usando o Factory
+    challenge = ChallengeFactory.create_challenge(
+        data['challenge_type'],
+        data['animal_id']
+    )
+    
+    is_correct = challenge.validate_answer(data['answer'])
+    
+    return jsonify({
+        'is_correct': is_correct,
+        'correct_answer': challenge.correct_answer if not is_correct else None
+    })
+
 # ========================================
 # ROTA TEMPORÁRIA: Atividade (mockup)
 # ========================================
@@ -258,3 +331,4 @@ if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+

@@ -13,9 +13,7 @@ import time
 
 # =====================================================
 # ENDPOINTS DO MÓDULO COGNITIVO (HENRIQUE)
-# =====================================================
-# Adicionar estas rotas ao App.py existente
-# =====================================================
+# # ===================================================
 
 
 def register_cognitive_routes(app):

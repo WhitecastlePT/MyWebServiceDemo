@@ -3,7 +3,7 @@ TimedChallengeDecorator - Adiciona limite de tempo aos desafios.
 
 Padrão de Estrutura: Decorator (Concrete Decorator)
 
-Autores: Henrique Crachat (2501450) & Fábio Amado (2501444)
+Autores: Henrique Crachat (2501450)
 UC: Arquitetura e Padrões de Software
 Universidade Aberta
 """

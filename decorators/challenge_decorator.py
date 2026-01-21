@@ -4,7 +4,7 @@ Decorator base abstrato para Challenges.
 Padrão de Estrutura: Decorator
 Este é o componente abstrato do padrão Decorator.
 
-Autores: Henrique Crachat (2501450) & Fábio Amado (2501444)
+Autores: Henrique Crachat (2501450)
 UC: Arquitetura e Padrões de Software
 Universidade Aberta
 """

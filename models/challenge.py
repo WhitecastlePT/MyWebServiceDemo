@@ -5,7 +5,7 @@ Padrões Implementados:
 - Factory Method (Criacional): Produto Abstrato
 - Observer (Comportamental): Subject/Observable
 
-Autores: Henrique Crachat (2501450) & Fábio Amado (2501444)
+Autores: Henrique Crachat (2501450)
 """
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, TYPE_CHECKING

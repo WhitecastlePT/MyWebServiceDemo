@@ -4,6 +4,9 @@ Analytics Observer - Observer Concreto para Analytics Cognitivo
 Implementa o padrão Observer para registar estatísticas de desafios
 no sistema de analytics cognitivo existente.
 
+ANTI-PADRÃO CORRIGIDO: Print Debugging
+Substituído print() por logging module com níveis configuráveis.
+
 Padrão: Observer (Comportamental)
 Papel: ConcreteObserver
 """
@@ -11,6 +14,9 @@ Papel: ConcreteObserver
 from observers.challenge_observer import ChallengeObserver
 from cognitive_module.cognitive_analytics import CognitiveAnalytics
 from typing import Optional
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class AnalyticsObserver(ChallengeObserver):
@@ -51,11 +57,11 @@ class AnalyticsObserver(ChallengeObserver):
             time_taken=time_taken
         )
 
-        # Log opcional para debugging (pode ser removido em produção)
+        # Logging com níveis apropriados
         status = "CORRECT" if is_correct else "INCORRECT"
-        print(f"[AnalyticsObserver] User {user_id} - {status} - "
-              f"Accuracy: {result['current_accuracy']:.1f}% - "
-              f"Level: {result['current_level']}")
+        logger.info(f"User {user_id} - {status} - "
+                   f"Accuracy: {result['current_accuracy']:.1f}% - "
+                   f"Level: {result['current_level']}")
 
     def on_challenge_started(self, user_id: str, challenge) -> None:
         """
@@ -69,7 +75,7 @@ class AnalyticsObserver(ChallengeObserver):
         self.analytics.initialize_user(user_id)
 
         challenge_type = challenge.get_challenge_type()
-        print(f"[AnalyticsObserver] User {user_id} started {challenge_type} challenge")
+        logger.debug(f"User {user_id} started {challenge_type} challenge")
 
     def on_challenge_skipped(self, user_id: str, challenge) -> None:
         """
@@ -80,7 +86,7 @@ class AnalyticsObserver(ChallengeObserver):
             challenge: Instância do desafio pulado
         """
         challenge_type = challenge.get_challenge_type()
-        print(f"[AnalyticsObserver] User {user_id} skipped {challenge_type} challenge")
+        logger.info(f"User {user_id} skipped {challenge_type} challenge")
 
     def get_user_progress(self, user_id: str) -> dict:
         """

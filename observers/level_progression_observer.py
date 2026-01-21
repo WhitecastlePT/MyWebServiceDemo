@@ -4,6 +4,9 @@ Level Progression Observer - Observer Concreto para Progressão de Níveis
 Implementa o padrão Observer para gerenciar sistema de níveis
 e progressão dos utilizadores baseado em desempenho.
 
+ANTI-PADRÃO CORRIGIDO: Magic Numbers
+Valores de XP, níveis e multiplicadores agora vêm de config.game_settings.
+
 Padrão: Observer (Comportamental)
 Papel: ConcreteObserver
 """
@@ -11,6 +14,7 @@ Papel: ConcreteObserver
 from observers.challenge_observer import ChallengeObserver
 from typing import Dict, List, Optional
 from datetime import datetime
+from config.game_settings import XPSettings
 
 
 class LevelProgressionObserver(ChallengeObserver):
@@ -22,27 +26,9 @@ class LevelProgressionObserver(ChallengeObserver):
     - Experiência (XP)
     - Requisitos para próximo nível
     - Notificações de level up
+
+    Configurações de XP e níveis vêm de config.game_settings.XPSettings.
     """
-
-    # Configuração de níveis
-    LEVELS = {
-        1: {'name': 'Explorador Iniciante', 'xp_required': 0, 'icon': '🌱'},
-        2: {'name': 'Observador Curioso', 'xp_required': 100, 'icon': '🔍'},
-        3: {'name': 'Conhecedor da Fauna', 'xp_required': 300, 'icon': '🦊'},
-        4: {'name': 'Especialista Animal', 'xp_required': 600, 'icon': '🦁'},
-        5: {'name': 'Mestre Naturalista', 'xp_required': 1000, 'icon': '🦅'},
-        6: {'name': 'Sábio da Natureza', 'xp_required': 1500, 'icon': '🌟'},
-        7: {'name': 'Guardião dos Animais', 'xp_required': 2200, 'icon': '👑'},
-        8: {'name': 'Lenda da Fauna', 'xp_required': 3000, 'icon': '🏆'}
-    }
-
-    # Multiplicadores de XP por tipo de desafio
-    XP_MULTIPLIERS = {
-        'audio': 1.0,
-        'visual': 1.1,
-        'habitat': 1.2,
-        'classification': 1.5
-    }
 
     def __init__(self, invenira_observer=None):
         """
@@ -128,32 +114,15 @@ class LevelProgressionObserver(ChallengeObserver):
         if not is_correct:
             return 0
 
-        # XP base
-        base_xp = 10
-
-        # Multiplicador por tipo de desafio
+        # Usar configurações centralizadas para cálculo de XP
         challenge_type = challenge.get_challenge_type()
-        type_multiplier = self.XP_MULTIPLIERS.get(challenge_type, 1.0)
+        difficulty = getattr(challenge, 'difficulty', 'medium')
 
-        # Bônus por velocidade
-        speed_bonus = 0
-        if time_taken < 5:
-            speed_bonus = 10
-        elif time_taken < 10:
-            speed_bonus = 5
-        elif time_taken < 20:
-            speed_bonus = 2
-
-        # Bônus por dificuldade (se existir)
-        difficulty_bonus = 0
-        if hasattr(challenge, 'difficulty'):
-            difficulty_map = {'easy': 0, 'medium': 5, 'hard': 10}
-            difficulty_bonus = difficulty_map.get(challenge.difficulty, 0)
-
-        # Cálculo final
-        total_xp = int((base_xp + difficulty_bonus) * type_multiplier + speed_bonus)
-
-        return total_xp
+        return XPSettings.calculate_xp(
+            challenge_type=challenge_type,
+            time_taken=time_taken,
+            difficulty=difficulty
+        )
 
     def _check_level_up(self, user_id: str) -> int:
         """
@@ -170,7 +139,7 @@ class LevelProgressionObserver(ChallengeObserver):
         current_level = user['level']
 
         # Verificar se atingiu XP para próximo nível
-        for level, config in sorted(self.LEVELS.items()):
+        for level, config in sorted(XPSettings.LEVELS.items()):
             if current_xp >= config['xp_required']:
                 current_level = level
             else:
@@ -201,7 +170,7 @@ class LevelProgressionObserver(ChallengeObserver):
         user['level_up_history'].append(level_up_event)
 
         # Notificar utilizador
-        level_config = self.LEVELS[new_level]
+        level_config = XPSettings.LEVELS[new_level]
         print(f"\n{'='*50}")
         print(f"*** LEVEL UP! ***")
         print(f"Utilizador: {user_id}")
@@ -235,13 +204,13 @@ class LevelProgressionObserver(ChallengeObserver):
         current_xp = user['current_xp']
 
         # Calcular XP para próximo nível
-        next_level = current_level + 1 if current_level < max(self.LEVELS.keys()) else None
+        next_level = current_level + 1 if current_level < max(XPSettings.LEVELS.keys()) else None
         xp_for_next = None
         xp_progress_percentage = 100
 
-        if next_level and next_level in self.LEVELS:
-            xp_required = self.LEVELS[next_level]['xp_required']
-            xp_current_level = self.LEVELS[current_level]['xp_required']
+        if next_level and next_level in XPSettings.LEVELS:
+            xp_required = XPSettings.LEVELS[next_level]['xp_required']
+            xp_current_level = XPSettings.LEVELS[current_level]['xp_required']
             xp_for_next = xp_required - current_xp
             xp_needed_for_level = xp_required - xp_current_level
             xp_progress = current_xp - xp_current_level
@@ -250,8 +219,8 @@ class LevelProgressionObserver(ChallengeObserver):
         return {
             'current_level': {
                 'number': current_level,
-                'name': self.LEVELS[current_level]['name'],
-                'icon': self.LEVELS[current_level]['icon']
+                'name': XPSettings.LEVELS[current_level]['name'],
+                'icon': XPSettings.LEVELS[current_level]['icon']
             },
             'xp': {
                 'current': current_xp,
@@ -261,8 +230,8 @@ class LevelProgressionObserver(ChallengeObserver):
             },
             'next_level': {
                 'number': next_level,
-                'name': self.LEVELS[next_level]['name'] if next_level and next_level in self.LEVELS else None,
-                'icon': self.LEVELS[next_level]['icon'] if next_level and next_level in self.LEVELS else None
+                'name': XPSettings.LEVELS[next_level]['name'] if next_level and next_level in XPSettings.LEVELS else None,
+                'icon': XPSettings.LEVELS[next_level]['icon'] if next_level and next_level in XPSettings.LEVELS else None
             } if next_level else None,
             'statistics': {
                 'challenges_completed': user['challenges_completed'],
@@ -288,7 +257,7 @@ class LevelProgressionObserver(ChallengeObserver):
             leaderboard.append({
                 'user_id': user_id,
                 'level': data['level'],
-                'level_name': self.LEVELS[data['level']]['name'],
+                'level_name': XPSettings.LEVELS[data['level']]['name'],
                 'total_xp': data['total_xp_earned'],
                 'challenges_completed': data['challenges_completed']
             })

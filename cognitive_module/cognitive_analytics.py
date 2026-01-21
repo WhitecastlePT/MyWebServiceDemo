@@ -9,10 +9,14 @@ Responsável por monitorizar:
 - Animais descobertos
 - Performance por categoria
 
+ANTI-PADRÃO CORRIGIDO: Magic Numbers
+Valores numéricos agora vêm de config.game_settings em vez de hardcoded.
+
 Autor: Henrique Crachat (2501450@estudante.uab.pt)
 """
 from typing import Dict, List, Optional
 from datetime import datetime
+from config.game_settings import LevelSettings, PointsSettings, RecommendationSettings
 from models.challenge import Challenge
 
 
@@ -202,40 +206,28 @@ class CognitiveAnalytics:
         )
         
         # Recomendar tipos com menor accuracy primeiro
-        return [t[0] for t in types_by_accuracy if t[1]['total'] < 10]
-    
+        return [t[0] for t in types_by_accuracy
+                if RecommendationSettings.should_recommend(t[1]['total'])]
+
     def _calculate_level(self, user: Dict) -> int:
-        """Calcula nível baseado em desempenho"""
-        total = user['total_challenges']
-        accuracy = user['accuracy_rate']
-        
-        if total < 5:
-            return 1
-        elif total < 15 and accuracy >= 60:
-            return 2
-        elif total < 30 and accuracy >= 70:
-            return 3
-        elif total < 50 and accuracy >= 80:
-            return 4
-        elif accuracy >= 85:
-            return 5
-        
-        return max(1, user['current_level'])
+        """
+        Calcula nível baseado em desempenho.
+
+        Usa configurações centralizadas de LevelSettings.
+        """
+        return LevelSettings.calculate_level(
+            total_challenges=user['total_challenges'],
+            accuracy_rate=user['accuracy_rate'],
+            current_level=user['current_level']
+        )
     
     def _calculate_points(self, is_correct: bool, time_taken: float) -> int:
-        """Calcula pontos baseado em correção e tempo"""
-        if not is_correct:
-            return 0
-        
-        base_points = 10
-        
-        # Bonus por rapidez (< 10 segundos = +5 pontos)
-        if time_taken < 10:
-            base_points += 5
-        elif time_taken < 20:
-            base_points += 2
-        
-        return base_points
+        """
+        Calcula pontos baseado em correção e tempo.
+
+        Usa configurações centralizadas de PointsSettings.
+        """
+        return PointsSettings.calculate_points(is_correct, time_taken)
     
     def export_analytics(self, user_id: str) -> Dict:
         """

@@ -9,49 +9,17 @@ Integra múltiplos padrões de design:
 Padrão Observer: Quando um desafio é criado ou completado, múltiplos
 observers são notificados automaticamente sem acoplamento direto.
 
+ANTI-PADRÃO CORRIGIDO: Singleton Abuse / Global State
+Anteriormente, observers eram variáveis globais. Agora usam Dependency Injection
+via ObserversContainer, permitindo testes isolados e multi-tenancy.
+
 Autor: Henrique Crachat (2501450@estudante.uab.pt)
 """
 from flask import request, jsonify
 from factories.challenge_factory import ChallengeFactory
-from cognitive_module.cognitive_analytics import cognitive_analytics
+from cognitive_module.observers_container import ObserversContainer
 
 import time
-
-
-# =====================================================
-# OBSERVERS GLOBAIS (Padrão Observer)
-# =====================================================
-# Nota: Observers são inicializados dentro de register_cognitive_routes()
-# para evitar importação circular
-analytics_observer = None
-achievement_observer = None
-invenira_observer = None
-level_progression_observer = None
-
-
-# =====================================================
-# HELPER FUNCTIONS (Padrão Observer)
-# =====================================================
-
-def attach_observers_to_challenge(challenge):
-    """
-    Anexa todos os observers a um desafio.
-
-    Padrão Observer: Esta função centraliza o registro de observers,
-    permitindo fácil adição/remoção de observers sem modificar
-    a lógica dos endpoints.
-
-    Args:
-        challenge: Instância de Challenge para anexar observers
-
-    Returns:
-        Challenge com observers anexados
-    """
-    challenge.attach(analytics_observer)
-    challenge.attach(achievement_observer)
-    challenge.attach(invenira_observer)
-    challenge.attach(level_progression_observer)
-    return challenge
 
 
 # =====================================================
@@ -59,30 +27,28 @@ def attach_observers_to_challenge(challenge):
 # =====================================================
 
 
-def register_cognitive_routes(app):
+def register_cognitive_routes(app, observers_container=None):
     """
     Registar rotas do módulo cognitivo no Flask app.
 
+    DEPENDENCY INJECTION: Aceita observers_container como parâmetro opcional.
+    Se None, cria uma nova instância. Permite injetar mock containers para testes.
+
     Args:
         app: Instância Flask
+        observers_container: ObserversContainer opcional (para DI/testes)
     """
 
     # =====================================================
-    # INICIALIZAR OBSERVERS (Padrão Observer)
+    # DEPENDENCY INJECTION (Anti-padrão corrigido)
     # =====================================================
-    # Import aqui para evitar importação circular
-    from observers.analytics_observer import AnalyticsObserver
-    from observers.achievement_observer import AchievementObserver
-    from observers.invenira_observer import InveniraObserver
-    from observers.level_progression_observer import LevelProgressionObserver
+    # Criar container se não fornecido (padrão de produção)
+    if observers_container is None:
+        observers_container = ObserversContainer()
 
-    global analytics_observer, achievement_observer, invenira_observer, level_progression_observer
-
-    # Criar instâncias dos observers
-    analytics_observer = AnalyticsObserver(cognitive_analytics)
-    achievement_observer = AchievementObserver()
-    invenira_observer = InveniraObserver()
-    level_progression_observer = LevelProgressionObserver(invenira_observer=invenira_observer)
+    # Usar closure para capturar observers_container nos endpoints
+    observers = observers_container
+    cognitive_analytics = observers.cognitive_analytics
 
     @app.route("/api/cognitive/challenge", methods=['POST'])
     def create_cognitive_challenge():
@@ -122,8 +88,8 @@ def register_cognitive_routes(app):
             else:
                 challenge = ChallengeFactory.create_challenge(challenge_type, animal_id)
 
-            # 2. OBSERVER: Anexar observers ao desafio
-            attach_observers_to_challenge(challenge)
+            # 2. OBSERVER: Anexar observers ao desafio (via container)
+            observers.attach_all_to_challenge(challenge)
 
             # 3. OBSERVER: Notificar que desafio foi iniciado
             challenge.notify_started(user_id)
@@ -132,7 +98,7 @@ def register_cognitive_routes(app):
             recommended_types = cognitive_analytics.get_recommended_challenges(user_id)
 
             # Obter progresso do utilizador (via observers)
-            level_progress = level_progression_observer.get_user_progress(user_id)
+            level_progress = observers.level_progression_observer.get_user_progress(user_id)
 
             return jsonify({
                 'success': True,
@@ -196,8 +162,8 @@ def register_cognitive_routes(app):
                 data['animal_id']
             )
 
-            # 2. OBSERVER: Anexar observers
-            attach_observers_to_challenge(challenge)
+            # 2. OBSERVER: Anexar observers (via container)
+            observers.attach_all_to_challenge(challenge)
 
             # 3. Validar resposta
             user_id = data['user_id']
@@ -211,13 +177,13 @@ def register_cognitive_routes(app):
 
             # 5. Coletar dados de todos os observers para resposta
             # Analytics
-            analytics_progress = analytics_observer.get_user_progress(user_id)
+            analytics_progress = observers.analytics_observer.get_user_progress(user_id)
 
             # Achievements
-            user_achievements = achievement_observer.get_user_achievements(user_id)
+            user_achievements = observers.achievement_observer.get_user_achievements(user_id)
 
             # Level Progression
-            level_progress = level_progression_observer.get_user_progress(user_id)
+            level_progress = observers.level_progression_observer.get_user_progress(user_id)
 
             return jsonify({
                 'success': True,

@@ -2,11 +2,17 @@
 Desafio de identificação visual.
 
 Padrão de Criação: Factory Method (Produto Concreto)
-Autores: Henrique Crachat (2501450) & Fábio Amado (2501444)
+
+ANTI-PADRÃO CORRIGIDO: Circular Import
+Anteriormente, imports estavam dentro de __init__ para evitar dependência circular.
+Agora usa import do módulo no topo, seguindo boas práticas Python.
+
+Autores: Henrique Crachat (2501450)
 """
 from models.challenge import Challenge
 from typing import List
 import random
+from data import animals_data
 
 
 class VisualChallenge(Challenge):
@@ -20,21 +26,19 @@ class VisualChallenge(Challenge):
     def __init__(self, animal_id: int, difficulty: int = 1):
         """
         Inicializa desafio visual.
-        
+
         Args:
             animal_id: ID do animal
             difficulty: Nível de dificuldade
         """
         super().__init__(animal_id, difficulty)
-        
-        from data.animals_data import get_animal_data, get_random_animals
-        
-        self.animal_data = get_animal_data(animal_id)
+
+        self.animal_data = animals_data.get_animal_data(animal_id)
         self.challenge_id = f"visual_{animal_id}_{random.randint(1000, 9999)}"
         self.correct_answer = self.animal_data['name_pt']
         self.image_file = self.animal_data['image_file']
-        
-        self._generate_options = lambda: self._create_options(get_random_animals)
+
+        self._generate_options = lambda: self._create_options(animals_data.get_random_animals)
     
     def _create_options(self, get_random_animals_func) -> List[str]:
         """Gera opções de resposta com animais similares"""

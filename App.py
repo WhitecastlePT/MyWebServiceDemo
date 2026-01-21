@@ -19,7 +19,7 @@ def index():
         'message': 'Dia & Noite: O Mundo dos Animais - Activity Provider',
         'status': 'online',
         'version': '1.0.0',
-        'autores': ['Henrique Crachat (2501450)', 'Fábio Amado (2501444)'],
+        'autores': ['Henrique Crachat (2501450)'],
         'endpoints': {
             'config': '/config',
             'params': '/api/params',
